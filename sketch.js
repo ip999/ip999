@@ -16,7 +16,7 @@ function preload() {
     clon + ',' + clat + ',' + zoom + '/' + ww + 'x' + hh +
     '?access_token=pk.eyJ1IjoiaXA5IiwiYSI6ImNqZGZ5aHJkZzBhaXAyeHBpdHF0NjVnczMifQ.wtEhgCIiP_ttvOqCYHb6ng');
 
-    loadJSON("http://api.open-notify.org/iss-now.json", gotISSData, 'jsonp');
+    loadJSON("https://api.open-notify.org/iss-now.json", gotISSData, 'jsonp');
   }
 
 function iss_update() {
