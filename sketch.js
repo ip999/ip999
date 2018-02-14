@@ -21,7 +21,7 @@ function preload() {
 
 function iss_update() {
   console.log("Updating...");
-  loadJSON("http://api.open-notify.org/iss-now.json", gotISSData, 'jsonp');
+  loadJSON("https://api.open-notify.org/iss-now.json", gotISSData, 'jsonp');
 }
 
 function gotISSData(data) {
