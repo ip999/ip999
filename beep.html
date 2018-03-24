@@ -1,0 +1,41 @@
+<html>
+<head>
+    <title>BEEP BEEP</title>
+</head>
+
+<body>
+  <audio id="audio" src="https://www.soundjay.com/misc/censor-beep-01.wav" autostart="false" ></audio>
+  
+
+  <script>
+
+function randomBetween(min, max) {
+    if (min < 0) {
+        return min + Math.random() * (Math.abs(min)+max);
+    }else {
+        return min + Math.random() * max;
+    }
+}
+
+  function doSomething(timer) {
+      var sound = document.getElementById("audio");
+      sound.play();
+      console.log('beep' + ":" + timer);
+    }
+
+(function loop() {
+    //var rand = Math.round((Math.random() * 100000) + 30000);
+    var rand = randomBetween(120000, 240000);
+    console.log('beep in '+ rand/1000 + ' seconds');
+    setTimeout(function() {
+            doSomething(rand);
+            loop();
+            console.log("loop");
+    }, rand);
+}());
+
+</script>
+
+</body>
+
+</html>
