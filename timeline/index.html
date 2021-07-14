@@ -5,6 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Timeline Mockup</title>
+    
+
     <style>
         /* #visjs {
             width: 100%;
@@ -17,8 +19,11 @@
 <body>
     <div id="filters"></div>
     <div id="visjs"></div>
-    <div id="details"><p>Click an item in the timeline for more info<p>buttons below not working yet</div>
-    <script>
+    <div id="details"></div>
+    <div id="buttons"><button id="filter" onclick="doFilterStuff()">Reset Filter</button></div>
+
+<script>
+var dataset = new vis.DataSet();
 
 async function fetchGraphQL(operationsDoc, operationName, variables) {
   const result = await fetch(
@@ -65,8 +70,8 @@ async function startFetchMyQuery() {
 
   console.log(data);
 
-    var container = document.getElementById('visjs');
-    var items = data.attacks
+    container = document.getElementById('visjs');
+    items = data.attacks
    
     // build "filter" bar
     let types = items.map(a => a.attack_type);
@@ -75,29 +80,60 @@ async function startFetchMyQuery() {
 
     filters.forEach(element => {
         var btn = document.createElement("button");
-        var t = document.createTextNode(element);
-        btn.appendChild(t);
-        document.body.appendChild(btn);
+        btn.innerHTML = element
+        btn.id = element
+        btn.onclick = function() {
+            doFilterStuff(this.id)
+        }
+        
+        document.getElementById("filters").appendChild(btn);
     });
 
-    var options = {
+    options = {
         template: function (item) {
             return `<h3> ${item.content} </h3><p> ${item.attack_type} </p>`;
         },
     };
     
-    var timeline = new vis.Timeline(container, items, options);
+    
+    dataset.add(items);
+    //timeline = new vis.Timeline(container, dataset, options);
+    setupTimeline(dataset)
 
+}
 
+function doFilterStuff(filterValue) {
+    // retrieve all items having a property group with value 2
+    if(filterValue != undefined) {
+        console.log(`Filtering dataset to only show ${filterValue}`)
+        var filtered = dataset.get({
+            filter: function (item) {
+                return (item.attack_type === filterValue);
+            }
+        });
+    console.log(filtered)
+    timeline.destroy()
+    setupTimeline(filtered)
+    } else {
+        timeline.destroy()
+        setupTimeline(dataset)
+        
+    }
 
+}
+
+function setupTimeline(data) {
+    timeline = new vis.Timeline(container, data, options);
+    
     timeline.on('click', function (properties) {
         console.log(properties.item);
         var result = items.filter(obj => {
             return obj.id === properties.item
         })
         console.log(result)
-        document.getElementById('details').innerHTML = `<p>Click here for more details: <a href="${result[0].url}">${result[0].content}</a>`;
+        document.getElementById('details').innerHTML = `<p>Link more details: <a href="${result[0].url}">${result[0].content}</a>`;
     });
+
 }
 
 startFetchMyQuery();
