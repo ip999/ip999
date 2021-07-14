@@ -114,13 +114,12 @@ function doFilterStuff(filterValue) {
     console.log(filtered)
     timeline.destroy()
     setupTimeline(filtered)
-    document.getElementById('details').innerHTML = ""
     } else {
         timeline.destroy()
         setupTimeline(dataset)
         
     }
-
+    document.getElementById('details').innerHTML = ""
 }
 
 function setupTimeline(data) {
