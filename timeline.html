@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeline Mockup</title>
+    <style>
+        /* #visjs {
+            width: 100%;
+            height: 600px;
+        } */
+    </style>
+    <script type="text/javascript" src="https://unpkg.com/vis-timeline@latest/standalone/umd/vis-timeline-graph2d.min.js"></script>
+    <link href="https://unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="filters"></div>
+    <div id="visjs"></div>
+    <div id="details"></div>
+    <script>
+
+async function fetchGraphQL(operationsDoc, operationName, variables) {
+  const result = await fetch(
+    "https://rested-marten-80.hasura.app/v1/graphql",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        query: operationsDoc,
+        variables: variables,
+        operationName: operationName
+      })
+    }
+  );
+
+  return await result.json();
+}
+
+const operationsDoc = `
+  query MyQuery {
+    attacks {
+      id
+      start
+      content
+      url
+      attack_type
+    }
+  }
+`;
+
+function fetchMyQuery() {
+  return fetchGraphQL(
+    operationsDoc,
+    "MyQuery",
+    {}
+  );
+}
+
+async function startFetchMyQuery() {
+  const { errors, data } = await fetchMyQuery();
+
+  if (errors) {
+    console.error(errors);
+  }
+
+  console.log(data);
+
+    var container = document.getElementById('visjs');
+    var items = data.attacks
+   
+    // build "filter" bar
+    let types = items.map(a => a.attack_type);
+    let filters = types.filter((item, i, ar) => ar.indexOf(item) === i);
+    console.log(filters)
+
+    filters.forEach(element => {
+        var btn = document.createElement("button");
+        var t = document.createTextNode(element);
+        btn.appendChild(t);
+        document.body.appendChild(btn);
+    });
+
+    var options = {
+        template: function (item) {
+            return `<h3> ${item.content} </h3><p> ${item.attack_type} </p>`;
+        },
+    };
+    
+    var timeline = new vis.Timeline(container, items, options);
+
+
+
+    timeline.on('click', function (properties) {
+        console.log(properties.item);
+        var result = items.filter(obj => {
+            return obj.id === properties.item
+        })
+        console.log(result)
+        document.getElementById('details').innerHTML = `<p>Click here for more details: <a href="${result[0].url}">${result[0].content}</a>`;
+    });
+}
+
+startFetchMyQuery();
+
+
+</script>
+
+</body>
+</html>
