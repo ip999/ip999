@@ -47,7 +47,7 @@ async function fetchGraphQL(operationsDoc, operationName, variables) {
 
 const operationsDoc = `
   query MyQuery {
-    attacks {
+    attacks(order_by: {start: asc}) {
       id
       start
       content
