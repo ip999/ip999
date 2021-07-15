@@ -9,15 +9,23 @@
     <link href="https://unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
     <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" type="text/css" />
+    <style>
+        #visjs {
+           height: 600px;
+           width: max-width;
+           display: block
+       }
+   </style>
+   <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
 </head>
 <body>
-    <div id="header"><h2>Concept for notable security incident database/timeline</h2></div>
+    <div id="header"><h2>Concept for database/timeline of notable cyber security events</h2></div>
+    <div id="buttons"><button id="filter" onclick="doFilterStuff()">Reset Filter</button></div>
     <div id="filters"></div>
     <div id="visjs"></div>
     <div id="details"></div>
-    <div id="buttons"><button id="filter" onclick="doFilterStuff()">Reset Filter</button></div>
     <div id="grid"></div>
-
+    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
 <script>
 var dataset = new vis.DataSet();
 
@@ -68,7 +76,6 @@ async function startFetchMyQuery() {
 
     container = document.getElementById('visjs');
     items = data.attacks
-   
     // build "filter" bar
     let types = items.map(a => a.attack_type);
     let filters = types.filter((item, i, ar) => ar.indexOf(item) === i);
@@ -87,10 +94,16 @@ async function startFetchMyQuery() {
 
     options = {
         template: function (item) {
-            return `<h3> ${item.content} </h3><p> ${item.attack_type} </p>`;
+            return `<h4> ${item.content} </h4><p> ${item.attack_type} </p>`;
         },
+        width: '100%',
+        height: '600px',
+        margin: {
+            item: 20
+        },
+        configure: false
     };
-       
+    
     dataset.add(items);
     setupTimeline(dataset)
 }
@@ -104,7 +117,7 @@ function doFilterStuff(filterValue) {
                 return (item.attack_type === filterValue);
             }
         });
-    console.log(filtered)
+    //console.log(filtered)
     timeline.destroy()
     setupTimeline(filtered)
     } else {
@@ -115,18 +128,47 @@ function doFilterStuff(filterValue) {
 }
 
 function setupTimeline(data) {
+    console.log(data)
     timeline = new vis.Timeline(container, data, options);
     timeline.on('click', function (properties) {
-        console.log(properties.item);
+        //console.log(properties.item);
         var result = items.filter(obj => {
             return obj.id === properties.item
         })
-        console.log(result)
+        //console.log(result)
         document.getElementById('details').innerHTML = `<p>Link more details: <a href="${result[0].url}">${result[0].content}</a>`;
     });
+    // this is horrific but it works for now - don't judge me
+    try {
+        data_for_grid = data.get();
+        console.log("get data")
+        drawGrid(data_for_grid);
+    } catch {
+        console.log("already an array")
+        data_for_grid = data
+        drawGrid(data_for_grid);
+    }
 }
 
+
+function drawGrid(griddata) {
+    document.getElementById("grid").innerHTML = "";
+    console.log(griddata)
+    const grid = new gridjs.Grid({
+    columns: [
+                { id: "start", name: "Date" },
+                { id: "content", name: "Description" },
+                // { id: "url", name: "Link" },
+                { id: "attack_type", name: "Attack Type"}
+            ],
+    data: griddata
+   }).render(document.getElementById("grid"));
+   grid.updateConfig().forceRender()
+}
+
+
 startFetchMyQuery();
+//drawGrid();
 
 </script>
 </body>
