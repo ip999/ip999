@@ -157,8 +157,8 @@ function drawGrid(griddata) {
     const grid = new gridjs.Grid({
     columns: [
                 { id: "start", name: "Date" },
-                { id: "content", name: "Description", formatter: (_, row) => gridjs.html(`<a href="${row.cells[1].data}">${row.cells[1].data}</a>`) },
-                //{ id: "url", name: "Link"},
+                { id: "url", name: "Link", hidden: true},
+                { id: "content", name: "Description", formatter: (_, row) => gridjs.html(`<a href="${row.cells[1].data}">${row.cells[2].data}</a>`) },
                 { id: "attack_type", name: "Attack Type"}
             ],
     data: griddata
