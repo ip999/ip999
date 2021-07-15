@@ -141,10 +141,8 @@ function setupTimeline(data) {
     // this is horrific but it works for now - don't judge me
     try {
         data_for_grid = data.get();
-        console.log("get data")
         drawGrid(data_for_grid);
     } catch {
-        console.log("already an array")
         data_for_grid = data
         drawGrid(data_for_grid);
     }
