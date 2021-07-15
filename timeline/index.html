@@ -9,10 +9,9 @@
     <link href="https://unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
     <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" type="text/css" />
-
 </head>
 <body>
-    <div id="header"><h2>Concept for notable security incident database timeline</h2></div>
+    <div id="header"><h2>Concept for notable security incident database/timeline</h2></div>
     <div id="filters"></div>
     <div id="visjs"></div>
     <div id="details"></div>
@@ -91,12 +90,9 @@ async function startFetchMyQuery() {
             return `<h3> ${item.content} </h3><p> ${item.attack_type} </p>`;
         },
     };
-    
-    
+       
     dataset.add(items);
-    //timeline = new vis.Timeline(container, dataset, options);
     setupTimeline(dataset)
-
 }
 
 function doFilterStuff(filterValue) {
@@ -114,14 +110,12 @@ function doFilterStuff(filterValue) {
     } else {
         timeline.destroy()
         setupTimeline(dataset)
-        
     }
     document.getElementById('details').innerHTML = ""
 }
 
 function setupTimeline(data) {
     timeline = new vis.Timeline(container, data, options);
-    
     timeline.on('click', function (properties) {
         console.log(properties.item);
         var result = items.filter(obj => {
@@ -130,7 +124,6 @@ function setupTimeline(data) {
         console.log(result)
         document.getElementById('details').innerHTML = `<p>Link more details: <a href="${result[0].url}">${result[0].content}</a>`;
     });
-
 }
 
 startFetchMyQuery();
